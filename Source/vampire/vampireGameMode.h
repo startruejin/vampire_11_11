@@ -13,6 +13,10 @@ class AvampireGameMode : public AGameModeBase
 
 public:
 	AvampireGameMode();
+	virtual void BeginPlay() override;
+
+private:
+	class AVampireVGPlayerController* vampirecontroller;
 };
 
 
