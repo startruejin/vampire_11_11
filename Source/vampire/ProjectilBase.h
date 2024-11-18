@@ -6,11 +6,15 @@
 #include "GameFramework/Actor.h"
 #include "ProjectilBase.generated.h"
 
+
+
 class USkillBaseComponent;
 USTRUCT(BlueprintType)
 struct FProjectilinfo {
 
 	GENERATED_BODY()
+
+
 	UPROPERTY(EditAnywhere,BlueprintReadWrite)
 	bool penetrate;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -3,7 +3,7 @@
 
 #include "ProjectilBase.h"
 #include "SkillBaseComponent.h"
-#include "GameFramework/MovementComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Engine/DamageEvents.h"
 #include "Kismet/GameplayStatics.h"
@@ -20,7 +20,7 @@ AProjectilBase::AProjectilBase()
 	RootComponent = collisionSphere;
 	SphereMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("SphereMesh"));
 	SphereMesh->SetCollisionProfileName(TEXT("NoCollsion"));
-	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShape/Sphere'"));
+	static ConstructorHelpers::FObjectFinder<UStaticMesh>SphereMeshAsset(TEXT("StaticMesh'/Engine/BasicShapes/Sphere.Sphere'"));
 	if (SphereMeshAsset.Succeeded()) {
 		SphereMesh->SetStaticMesh(SphereMeshAsset.Object);
 	}
@@ -28,8 +28,8 @@ AProjectilBase::AProjectilBase()
 	SphereMesh->SetRelativeLocation(FVector::ZeroVector);
 	SphereMesh->SetWorldScale3D(FVector(0.3f, 0.3f, 0.3f));
 	ProjectileMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
-	ProjectileMovement->UpdatedComponent() = RootComponent;
-	collsionSphere->OnComponentBeginOverlap.AddDynamic(this,&AProjectileBase::)
+	ProjectileMovement->UpdatedComponent = RootComponent;
+	collisionSphere->OnComponentBeginOverlap.AddDynamic(this, &AProjectilBase::OnProjectileOverlap);
 
 
 }
@@ -49,6 +49,8 @@ void AProjectilBase::Tick(float DeltaTime)
 
 }
 
+
+
 void AProjectilBase::OnProjectileHit(AActor* otherActor)
 {
 }
@@ -59,6 +61,7 @@ void AProjectilBase::OnProjectileHit_Implementaion(AActor* otherActor)
 
 void AProjectilBase::OnProjectileOverlap(UPrimitiveComponent* OverlappedComponent, AActor* otherActor, UPrimitiveComponent* otherComp, int32 otherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+
 }
 
 void AProjectilBase::LaunchProjectile(const FVector& Direction)
@@ -70,15 +73,27 @@ void AProjectilBase::LaunchProjectile(const FVector& Direction)
 	if (!OwnerComponent) {
 		return;
 	}
-	ProjectileMovement->initialSpeed = OwnerComponent->GetSkillinfo().projectilInfo.initialspeed;
-	ProjectileMovement->maxSpeed = OwnerComponent->GetSkillinfo().projectilInfo.maxspeed;
-	ProjectileMovement->bRoationFollowsVelocity = true;
-	ProjectileMovement->velocity = Direction* OwnerComponent->GetSkillinfo().projectilInfo.initialspeed;
+	ProjectileMovement->InitialSpeed = OwnerComponent->GetSkillinfo().projectilInfo.initialspeed;
+	ProjectileMovement->MaxSpeed = OwnerComponent->GetSkillinfo().projectilInfo.maxspeed;
+	ProjectileMovement->bRotationFollowsVelocity = true;
+	ProjectileMovement->Velocity = Direction* OwnerComponent->GetSkillinfo().projectilInfo.initialspeed;
 	SetLifeSpan(OwnerComponent->GetSkillinfo().projectilInfo.lifetime);
-	hitcount = ownerComponent->GetSkillinfo().projectilInfo.hitcount;
+	hitcount = OwnerComponent->GetSkillinfo().projectilInfo.hitcount;
 }
 
 void AProjectilBase::ApplyDamageToActor(AActor* ActorToDamage)
 {
+	if (OwnerComponent == nullptr) {
+		return;
+	}
+	float damage = OwnerComponent->GetSkillinfo().damage;
+	FVector Hitlocation = GetActorLocation();
+	FDamageEvent DamageEvent;
+	if (GetInstigator() == nullptr) {
+		GEngine->AddOnScreenDebugMessage(-1,2.0f,FColor::Red,"Not set Instigator");
+	}
+	else {
+		ActorToDamage->TakeDamage(damage, DamageEvent, GetInstigatorController(), GetInstigator());
+	}
 }
 

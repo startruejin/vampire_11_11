@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Components/SceneComponent.h"
-#include "SkillBaseComponent.generated.h"
 #include "ProjectilBase.h"
+#include "SkillBaseComponent.generated.h"
 
 UENUM(BlueprintType)
 enum class ESkillType :uint8 {
@@ -67,13 +67,13 @@ public:
 	FORCEINLINE void SetSkillinfo(const FSkillInfo& newSkillinfo) { SkillInfo = newSkillinfo; }
 	FORCEINLINE const FSkillInfo& GetSkillinfo() { return SkillInfo; }
 	void skilllevelup();
-	UPROPERTY(EditdefaultOnly,BlueprintReadWrite,Category="Skill")
+	UPROPERTY(editdefaultsonly,BlueprintReadWrite,Category="Skill")
 	int32 currentLevel;
 
 	UFUNCTION()
 	virtual void PerformSkillAction();
 	
-	UPROPERTY(EditdefaultOnly, BlueprintReadWrite, Category = "Skill")
+	UPROPERTY(editdefaultsonly, BlueprintReadWrite, Category = "Skill")
 	FSkillInfo SkillInfo;
 		
 private:

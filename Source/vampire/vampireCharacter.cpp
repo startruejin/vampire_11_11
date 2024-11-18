@@ -48,3 +48,22 @@ void AvampireCharacter::Tick(float DeltaSeconds)
 {
     Super::Tick(DeltaSeconds);
 }
+
+APawn* AvampireCharacter::FindClosestEnemy()
+{
+	APawn* returnPawn = nullptr;
+	float ClosestDistance = FLT_MAX;
+	FVector ActorLocation = GetActorLocation();
+	
+	for (APawn* enemy : Enemys) {
+	
+		if (enemy != nullptr) {
+			float DistanceToEnemy = FVector::Dist(ActorLocation, enemy->GetActorLocation());
+			if (DistanceToEnemy < ClosestDistance) {
+				ClosestDistance = DistanceToEnemy;
+				return enemy;
+			}
+		}
+	}
+	return returnPawn;
+}
